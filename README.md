@@ -16,8 +16,8 @@ Tested with CUDA 8.0.
 
 ```
 nvprof -o foo.nvvp your_program
-nvprof2json foo.nvvp > foo.json
-# Open foo.json in chrome://tracing
+nvprof2json foo.nvvp | gzip > foo.json.gz
+# Open foo.json.gz in chrome://tracing
 ```
 
 ## Known bugs
@@ -37,6 +37,3 @@ nvprof2json foo.nvvp > foo.json
 
 * This Python script isn't written particularly efficiently.  Could be
   made much faster!
-
-* The JSON output can become quite big.  Does chrome://tracing support
-  a binary format?  If so, we should use that.
