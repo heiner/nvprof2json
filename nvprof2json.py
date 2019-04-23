@@ -6,6 +6,23 @@ import os
 import sys
 import copy
 
+
+class Output:
+
+    def __init__(self, output=sys.stdout):
+        self.output = output
+        self.output.write('[')
+        self.char = ''
+
+    def __del__(self):
+        self.output.write(']')
+
+    def dump(self, obj):
+        self.output.write(self.char)
+        json.dump(obj, self.output, separators=(',', ':'))
+        self.char = ','
+
+
 def main():
     parser = argparse.ArgumentParser(description='Convert nvprof output to Google Event Trace compatible JSON.')
     parser.add_argument('filename')
@@ -18,7 +35,7 @@ def main():
     for r in conn.execute("SELECT _id_ as id, value FROM StringTable"):
         strings[r["id"]] = demangle(r["value"])
 
-    traceEvents = []
+    output = Output()
 
     """
     _id_: 11625
@@ -49,7 +66,7 @@ def main():
                     # TODO: More
                     },
                 }
-        traceEvents.append(event)
+        output.dump(event)
 
     # TODO DRIVER
 
@@ -86,7 +103,7 @@ def main():
                     # TODO: More
                     },
                 }
-        traceEvents.append(event)
+        output.dump(event)
 
     """
     _id_: 1
@@ -145,7 +162,7 @@ def main():
                     # TODO: More
                     },
                 }
-        traceEvents.append(event)
+        output.dump(event)
 
     # name: index into StringTable
     # What is thed difference between end and completed?
@@ -197,12 +214,8 @@ def main():
         alt_event = copy.deepcopy(event)
         alt_event["tid"] = alt_event["name"]
         alt_event["pid"] = "[{}:{}] Compute".format(row["deviceId"], row["contextId"])
-        traceEvents.append(event)
-        traceEvents.append(alt_event)
-
-
-    json.dump(traceEvents, sys.stdout)
-    print()
+        output.dump(event)
+        output.dump(alt_event)
 
 def munge_time(t):
     """Take a time from nvprof and convert it into a chrome://tracing time."""
