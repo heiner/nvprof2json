@@ -264,9 +264,11 @@ def eprintRow(row):
         eprint("{}: {}".format(k, row[k]))
     eprint("----")
 
-def eprint(*args, **kwargs):
+def eprint(value, history=set(), **kwargs):
     """Print to stderr."""
-    print(*args, file=sys.stderr, **kwargs)
+    if value not in history:
+        history.add(value)
+        print(value, file=sys.stderr, **kwargs)
 
 def inspect_db(conn):
     """Quickly dump data of all tables in database, with field names."""
