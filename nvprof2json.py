@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sqlite3
 import argparse
 import enum
@@ -51,7 +53,7 @@ def main():
     for row in conn.execute("SELECT * FROM CUPTI_ACTIVITY_KIND_RUNTIME"):
         #eprintRow(row)
         try:
-            cbid = Cbids(row["cbid"]).name
+            cbid = Cbid(row["cbid"]).name
         except ValueError:
             cbid = str(row["cbid"])
             eprint("Unrecognized cbid {}".format(cbid))
@@ -234,7 +236,7 @@ def demangle(name):
         return name
 
 
-class Cbids(enum.IntEnum):
+class Cbid(enum.IntEnum):
     INVALID = 0
     cudaDriverGetVersion = 1
     cudaRuntimeGetVersion = 2
